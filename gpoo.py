@@ -1,8 +1,9 @@
-from git import Repo, Actor # GitPython
-import git.exc as GitExceptions # GitPython
-import os
+from git import Repo, Actor
+import git.exc as GitExceptions
+import os, signal, sys, time
 import datetime
 from isoweek import Week
+import itertools
 
 
 name = "Itai Ferber"
@@ -11,21 +12,42 @@ name = "dank kush"
 email = "jack.fischer11@gmail.com"
 
 
+def manager():
+  pid = os.fork()
+  if pid == 0: #child, displays spinner
+    show_spinner()
+  if pid != 0: #parent, do git work
+    write_commits()
+    os.kill(pid, signal.SIGKILL)
+    print "You're good!"
+
+    
 def write_commits():
   current_week_num = datetime.date.isocalendar(datetime.date.today())[1]
   current_year_num = datetime.date.today().year
 
-  #make_p(current_year_num, current_week_num - 41) #left p
-  #make_p(current_year_num, current_week_num - 14) #right p
-  #make_o(current_year_num, current_week_num - 32) #left o
-  #make_o(current_year_num, current_week_num - 23) #right o
-  #make_year()
+  make_year()
+  for _ in range(10):
+    make_p(current_year_num, current_week_num - 41) #left p
+    make_p(current_year_num, current_week_num - 14) #right p
+    make_o(current_year_num, current_week_num - 32) #left o
+    make_o(current_year_num, current_week_num - 23) #right o
+
+
+def show_spinner():
+  sys.stdout.write("Writing commits. This could take a bit... ")
+  spinner = itertools.cycle(['- ', '/ ', '| ', '\\ '])
+  while True:
+    sys.stdout.write(spinner.next())
+    sys.stdout.flush()
+    time.sleep(0.05)
+    sys.stdout.write('\b\b')
 
 
 def make_year():
   #today = datetime.datetime.today()
   today = make_today_object()
-  for i in range(365):
+  for i in range(366):
     delta = datetime.timedelta(days=i)
     target_day = today - delta
     commit(target_day)
@@ -96,5 +118,6 @@ def commit(dt_obj):
 
 
 if __name__ == "__main__":
-  write_commits()
+  manager()
+
 
