@@ -6,10 +6,9 @@ from isoweek import Week
 import itertools
 
 
-name = "Itai Ferber"
-email = "itai@itaiferber.net"
-name = "dank kush"
-email = "jack.fischer11@gmail.com"
+name = "Example Name"
+email = "email@example.com"
+commit_message = "Wow such git"
 
 
 def manager():
@@ -53,7 +52,7 @@ def make_year():
     commit(target_day)
 
 def make_today_object():
-  """bc today() gives seconds etc that throws off brittle formatting, yolo"""
+  """bc today() gives seconds etc that throws off brittle formatting"""
   y = datetime.datetime.today().year
   m = datetime.datetime.today().month
   d = datetime.datetime.today().day
@@ -102,7 +101,7 @@ def commit(dt_obj):
 
   action_date = dt_obj.isoformat()
   action_date += " 12:00:00"
-  message = "Sweg 420"
+  message = commit_message
   actor = Actor(name, email)
 
   try:
