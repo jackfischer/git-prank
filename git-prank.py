@@ -12,6 +12,7 @@ commit_message = "Wow such git"
 
 
 def manager():
+  check_environment()
   pid = os.fork()
   if pid == 0: #child, displays spinner
     show_spinner()
@@ -21,6 +22,19 @@ def manager():
     print "You're good!"
 
     
+def check_environment():
+  try:
+      Repo(".")
+  except GitExceptions.InvalidGitRepositoryError:
+      print "Error: this isn't a git repo"
+      sys.exit(1)
+  try:
+    open("readme.md")
+  except:
+    print "no file (readme.md) to work with"
+    sys.exit(1)
+  return
+
 def write_commits():
   current_week_num = datetime.date.isocalendar(datetime.date.today())[1]
   current_year_num = datetime.date.today().year
@@ -96,7 +110,6 @@ def make_p(current_year_num, begin_week_num):
 
 
 def commit(dt_obj):
-  respository_directory = "."
   new_file_path = "readme.md"
 
   action_date = dt_obj.isoformat()
@@ -104,11 +117,7 @@ def commit(dt_obj):
   message = commit_message
   actor = Actor(name, email)
 
-  try:
-      repo = Repo(respository_directory)
-  except GitExceptions.InvalidGitRepositoryError:
-      print "Error: %s isn't a git repo" % respository_directory
-      sys.exit(5)
+  repo = Repo(".")
 
   os.environ["GIT_AUTHOR_DATE"] = action_date
   os.environ["GIT_COMMITTER_DATE"] = action_date
